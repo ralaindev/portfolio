@@ -1,0 +1,149 @@
+openapi: 3.1.0
+info:
+  title: Inventory Service API
+  summary: Reserve product stock for orders.
+  description: |
+    HTTP contract for the inventory service.
+
+    The default reservation path uses optimistic locking. The pessimistic
+    alternative is available explicitly for learning and comparison.
+  version: 1.0.0
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: Stock reservations
+    description: Reserve available product stock
+paths:
+  /api/v1/stock/reservations:
+    post:
+      tags:
+        - Stock reservations
+      operationId: reserveStock
+      summary: Reserve product stock
+      description: |
+        Reserves stock for an order. Repeating the same orderId and productId
+        is idempotent and returns the existing reservation.
+      parameters:
+        - name: pessimistic
+          in: query
+          required: false
+          description: Use PESSIMISTIC_WRITE instead of optimistic locking.
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReserveStockRequest'
+            example:
+              orderId: ad2f3742-a4a6-4b9c-aed1-45884cc7bd21
+              productId: 55db5caf-b0da-49ab-b346-b7581a91ee76
+              quantity: 1
+      responses:
+        '201':
+          description: Stock reservation created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockReservationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/ReservationConflict'
+
+components:
+  responses:
+    BadRequest:
+      description: The request is syntactically invalid.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    ReservationConflict:
+      description: Stock is insufficient or another reservation won a concurrency conflict.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+  schemas:
+    ReserveStockRequest:
+      type: object
+      required:
+        - orderId
+        - productId
+        - quantity
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+    StockReservationResponse:
+      type: object
+      required:
+        - reservationId
+        - orderId
+        - productId
+        - quantity
+        - createdAt
+      properties:
+        reservationId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          format: int32
+        createdAt:
+          type: string
+          format: date-time
+    ProblemDetail:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri-reference
+        fieldErrors:
+          type: array
+          items:
+            type: object
+            required:
+              - field
+              - message
+            properties:
+              field:
+                type: string
+              message:
+                type: string

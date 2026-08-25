@@ -2,9 +2,8 @@
 
 ## Context
 
-The project is a learning portfolio for distributed order processing. The
-business flow has separate responsibilities for orders, inventory, payments,
-queries, and notifications.
+The business flow has separate responsibilities for orders, inventory,
+payments, queries, and notifications.
 
 ## Decision
 
@@ -14,7 +13,7 @@ service owns its domain model and data. Phase 0 starts with only `order-service`
 ## Alternatives considered
 
 - A modular monolith would be simpler initially, but would hide service
-  boundaries and message-driven failure modes that this portfolio needs to show.
+  boundaries and message-driven failure modes that the project needs to study.
 - Separate repositories would make early iteration and local changes harder.
 
 ## Consequences

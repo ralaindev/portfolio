@@ -1,8 +1,7 @@
 # Contributing
 
-This is a personal learning repository. Keep changes small and focused on one
-phase. Prefer explicit Java code, useful tests, and short documentation that
-records a real decision or limitation.
+Keep changes small and focused on one phase. Prefer explicit Java code, useful
+tests, and short documentation that records a real decision or limitation.
 
 Before opening a pull request, run:
 

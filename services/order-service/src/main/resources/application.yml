@@ -10,6 +10,11 @@ spring:
   flyway:
     enabled: true
 
+springdoc:
+  swagger-ui:
+    url: /openapi/order-service-openapi.yaml
+    disable-swagger-default-url: true
+
 management:
   endpoints:
     web:
